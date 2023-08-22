@@ -1,0 +1,273 @@
+\documentclass[11pt]{article}
+\usepackage{graphicx}
+\setlength{\textheight}{9in}
+\setlength{\topmargin}{-1in} 
+\setlength{\headheight}{0.5in}
+\setlength{\topskip}{0.5in}
+\setlength{\textwidth}{6.5in}
+\setlength{\oddsidemargin}{-0.25in}
+\setlength{\evensidemargin}{-0.25in}
+\parskip1.5ex
+\addtolength{\baselineskip}{+.1\baselineskip}
+\newlength{\lineheight}
+\setlength{\lineheight}{11pt}
+\newcommand{\ls}[1]{\baselineskip=#1\lineheight}
+\newcommand{\bitem}{\begin{itemize}}
+\newcommand{\eitem}{\end{itemize}}
+\newcommand{\benum}{\begin{enumerate}}
+\newcommand{\eenum}{\end{enumerate}}
+\newcommand{\bdesc}{\begin{description}}
+\newcommand{\edesc}{\end{description}}
+\newcommand{\comment}[1]{}
+%BEGIN
+\begin{document}
+\title{The {\bf C}ompany {\bf D}atabase Conceptual {\bf D}esign (CDD)  and \\
+Logical Relational Schema (LRS)}
+\date{Original version: February 2019 \\
+Updated February 2022}
+\author{Dr. Soraya Abad Mota}
+
+\maketitle
+
+\begin{center}
+This document contains a very brief and concise example of a {\em Conceptual Database Design document (CDD)} for the hypothetical Company Database and the mapping of that conceptual schema into the (theoretical) Relational Data Model. The translated schema is the Logical Relational Schema (LRS) of the Company Database presented in section \ref{lrs}.
+\end{center}
+
+\ls{1.2}
+\section{The Company}
+A generic Company is divided into organizational units which may be called {\em departments}.
+The Company hires {\em employees} and they work in a unit. There is open flexibility on the number of employees in a department or in how many departments may an employee work for at some point in time. 
+Some departments manage {\em projects} and employees from different departments may play a rol in some projects. It is unbound the number of projects an employee may work on.
+ 
+The Company records data about their employees. For insurance or other benefits, the Company may also gather data about the {\em dependents} of each employee. It is also relevant to know the relatioship between different employees in the company or between a dependent of an employee and another employee.
+
+The purpose of this database is to hold information about the units, the personnel, and the projects in progress or concluded. The main users of the database are the employees in their different roles in the Company. Some employees have access to more information than others, depending on their reponsibilities within the Company.
+
+This document presents the conceptual schema and the logical relational schema for this database. It is organized in four sections. Section 2 contains the complete description of the conceptual schema following the notation described in the template document. Section 3 lists the most important queries that may be posed to this specific database. Section 4 presents the translation of the conceptual schema into the "theoretical" relational data model for this database.
+
+\section{Conceptual Schema of the Company Database \label{BDGM}}
+The order of presentation of the conceptual schema is: 
+\begin{enumerate}
+\item Entities: description and attributes.
+\item Relationships: description and attributes (if they have them).
+\item The EER diagram.
+\item The semantic integrity constraints.
+\end{enumerate}
+
+%ENTITY DESCRIPTION
+\subsection{Entities}
+\noindent
+The entities defined for this database are:
+\begin{itemize}
+\item DEPARTMENT
+\item EMPLOYEE
+\item DEPENDENT
+\item PROJECT
+\end{itemize}
+
+\noindent
+A detailed description of each entity follows.
+\begin{description}
+\item{\em\bf DEPARTMENT:} One of the organizational units of the company. \\
+Some example instances are: Presidency, Research and Development, Human Resources.
+ 
+\begin{tabular}{llc}
+ Attributes: & {\bf \underline{DName}} &  (SSPF)\\
+	    & CreationDate (dd,mm,yyyy) &  (CSPF) \\
+	    & Location &  (SSPF)\\
+\end{tabular}
+
+\item{\em\bf EMPLOYEE:} Persons who have been hired by the Company to perform some tasks.
+
+\begin{tabular}{llc}
+ Atributes: & {\bf \underline{ESSN}} & (SSPF) \\
+            & EStartDate (DD/MM/YYYY) & (CSPF) \\
+            & EName (N1,N2,A1,A2) & (CSPF) \\
+            & EPhones (code,number) & (CMPO)
+\end{tabular}
+
+\item{\em\bf DEPENDENT:} Persons who are economically dependent on some employees. It could be parents, siblings or children. This is a weak entity. The database holds information about the dependents of the current employees. Some employees may not have any dependents.
+
+\begin{tabular}{llc}
+ Atributes:  & DBirthDate (DD/MM/YYYY) & (CSPF) \\
+            & DName (FirstName,LastName) & (CSPF) 
+\end{tabular}
+
+\item{\em\bf PROJECT:} A major undertaking with very specific objectives, which is planned and has resources assigned to it.
+
+\begin{tabular}{llc}
+ Attributes: & {\bf \underline{PName}} &  (SSPF)\\
+	    & PStartDate (dd,mm,yyyy) &  (CSPF) \\
+	    & PEndDate (dd,mm,yyyy) &  (CSPO) \\
+	    & PObjectives &  (SSPF)\\
+\end{tabular}
+\end{description}
+
+% RELATIONSHIPS DESCRIPTION
+\subsection{Relationships}
+\noindent
+There are six (6) regular relationships and one identifying relationship in this schema and described below.
+\begin{description}
+\item [boss] ~~~ An employee acts as the boss of a department for a specified period.
+
+\begin{tabular}{lllc}  
+  Atributes: & bPeriods & (CMPF) \\
+& bStartDate (dd/mm/yyyy) & (CSPF)\\
+& bEndDate (dd/mm/yyyy) & (CSPO)
+\end{tabular}
+\item [controls] ~~~~~~~ indicates the relationship between a project and the department that controls it.
+
+\item [depends] ~~~~~~~~ identifying relationship of the weak entity DEPENDENT.
+No additional attributes.
+\item [participates] ~employees participate in projects, regardless of their departamental affiliation. 
+
+\begin{tabular}{llc}
+ Atributes: & pRole & (SSPF) \\
+            & pStartDate (DD/MM/YYYY) & (CSPF) \\
+\end{tabular}
+\item [relative] ~~~ shows how an employee is related to a dependent of another employee.
+
+\begin{tabular}{llc}
+  Attributes:& de-Relationship & (SMPF)
+\end{tabular}
+
+\item [supervision] ~~~\\
+An employee supervises another employee. Usually it refers to direct supervision. The {\em boss} of a department supervises directly the employees at the next higher level in that department.
+
+No attributes.
+\item [works]  ~~~
+Describes the relationship between an employee and the department for which they work. In the diagram the structural constraints of EMPLOYEE in works is (1,1), but it could be made more general and allow it to be (0,1) or (0,n), depends on the semantic of the relationship in a specific company.
+
+\begin{tabular}{lllc}  
+  Atributes: & Periods & (CMPF) \\
+& Composed of the following 2 attributes:\\
+& StartDate (dd/mm/yyyy) & (CSPF)\\
+& EndDate (dd/mm/yyyy) & (CSPO)
+\end{tabular}
+
+\end{description}
+
+
+\begin{figure}[h!]
+ \centering
+ \includegraphics[width=4.4in,height=3in]{EMPLOYEE-DEPT-v3.pdf}
+  \caption{The EER Diagram of A Company Database \label{sgm}}
+\end{figure}
+
+\newpage
+
+\subsection{Semantic Integrity Constraints}
+\noindent
+Some semantic integrity constraints associated with this Company database that may not be represented with the EER schema shown are listed in this subsection.
+
+\begin{enumerate}
+\item The Presidency is the only Department that must have a boss, the president or CEO of the company 
+\item A supervisor cannot supervise himself. In other words, the same employee cannot be supervisor and supervised in the same supervision relationship instance.
+\item \verb|EndDate| $~>~$ \verb|StartDate|. This restriction holds for every pair of attributes with this semantics.
+\item All the instances of the relationship {\em boss} are a subset of the relationship {\em works}. In other words, for an employee to be the boss of a department, they have to work in that department.
+\item The employee instance that identifies a dependent in the weak entity with that name, cannot participate in the relationship {\em relative} with that same dependent instance.
+\end{enumerate}
+
+\newpage
+\section{Example Queries}
+\noindent
+A list of the most important queries 
+\benum
+\item For a given Department, provide the list of all the Employees who work in that department.
+\item List all the employees who are bosses.
+\item List all the employees who have dependents and provide the data of their dependents.
+\item List all the employees who have dependents and at least one of those dependents is a relative of another employee in the company. Show how they are related.
+\item  Provide examples of supervisors who are not bosses of any department.
+\item List all the projects under the control of the R\&D department.
+  \item Which employees work on Project X? For which department do they work?
+\item Which employees work on at least three projects?
+\item Which employees have at least two different roles in the same project.
+\item Which departments have less than 5 employees?
+\eenum
+
+\newpage
+\section{The Logical Relational Schema (LRS) for the Company Database} \label{lrs}
+The conceptual schema described for the Company Database is mapped into the Relational Schema presented in this section. 
+All the attributes underlined in the same Relation belong to the primary key. By default all the attributes that do not belong to the primary key may be null, unless explicitly specified that they cannot be null.
+\vskip.2in
+
+\noindent
+${\bf DEPARTMENT}(\underline{DNumber}, DName, CreationDate, Location) $
+
+No attribute may be null.
+
+\noindent
+${\bf EMPLOYEE}(\underline{SSN}, EStartDate, EFName1, EFName2,ELName1,ELName2,SuperSSN,Dno)$ 
+
+$SuperSSN$ is foreign key, references $EMPLOYEE$ 
+
+$Dno$ is foreign key, references $DEPARTMENT$ and may not be null
+
+\noindent
+${\bf EMPPhone}(\underline{ESSN, AreaCode, PhoneNumber})$ 
+
+ESSN is foreign key, references $EMPLOYEE$ 
+
+\noindent
+${\bf DEPENDENT}(\underline{ESSN, DBirthDate, DName})$ 
+
+ESSN is foreign key, references $EMPLOYEE$ 
+
+\noindent
+${\bf PROJECT}(\underline{PNo}, PName, PStartDate, PEndDate, PObjectives ,controlsDno)$
+
+controlsDno is foreign key,references $DEPARTMENT$ and may not be null \\
+PEndDate and POjeectives may not be null
+
+\noindent
+${\bf boss}(\underline{DNumber, SSN, StartDate}, EndDate)$ 
+
+DNumber is foreign key, references $DEPARTMENT$
+
+SSN is foreign key, references $EMPLOYEE$ 
+
+\noindent
+${\bf participates}(\underline{ESSN,PPno}, Role, StartDate)$
+
+\noindent
+${\bf relative}(\underline{rSSN, ESSN, DBirthDate, DName, de\_Relationship})$ 
+
+SSN is foreign key, references $EMPLOYEE$ 
+
+\{ESSN, DBirthDate, DName\} is foreign key, references $DEPENDENT$
+
+\noindent
+${\bf worksPeriods}(\underline{ESSN,Dno, wP\_StartDate}, wP\_EndDate)$
+
+ESSN is foreign key, references $EMPLOYEE$
+
+Dno is foreign key, references $DEPARTMENT$
+\vskip .2in
+\noindent
+Each attribute needs to have its domain specified. (We are skipping the domain specification in this example, but you should do it in your project, since most attributes are not obvious.)
+
+\newpage
+\subsection{Additional Integrity Constraints for the relational schema}
+\noindent
+The integrity constraints that must hold  for the Company database and that are not guaranteed by the relation schemas described above are listed in this subsection.
+
+\begin{enumerate}
+\item There is at least one tuple in the relation {\bf boss} for the Presidency.
+\item Not all employees appear in the relation \verb|EMPPHONE|. More than a constraint, this is a non-constraint.
+\item For each tuple of \verb|EMPLOYEE| the value of attribute \verb|SSN| must be different from the value of \verb|SuperSSN| (in that same tuple). 
+A supervisor cannot supervise themself. In other words, the same employee cannot be supervisor and supervised in the same supervision relationship instance.
+\item \verb|EndDate| $~>~$ \verb|StartDate|. This restriction holds for every pair of attributes with this semantics.
+\item Every \verb|SSN| value in the tuples of  \verb|EMPLOYEE| must appear in at least one tuple of the relation 
+\verb|participates|.
+\item Every \verb|PNo| value in the tuples of \verb|PROJECT| must appear in at least one tuple of the relation 
+\verb|participates|.
+\item The relationship \verb|works| has two entities with minimum participation of 1, these show as the following two relational constraints:
+\begin{enumerate}
+\item \verb|Dno| in \verb|EMPLOYEE| may not be null. (Already specified earlier in this section with a relational constraint, but repeated here for clarity.)
+\item Every value of Dnumber in the tuples of the relation \verb|DEPARTMENT| must appear in at least one tuple of 
+\verb|EMPLOYEE| in the attribute \verb|Dno|. (In other words, every department must have at least an employee who works in it.)
+\end{enumerate}
+\item For all the tuples in ${\bf worksPeriods}$, with the same value in ESSN, only one tuple may have the $wP\_EndDate$ be null, all others must have some value, and that $Dno$ in the tuple with the null value, must be the same as the (current) Dno in $EMPLOYEE$ for the employee with that $ESSN$. This relation is keeping some of the history of employment in the different departments.
+
+\end{enumerate}
+\end{document}

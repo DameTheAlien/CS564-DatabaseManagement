@@ -1,0 +1,28 @@
+------------------------------------------------
+CREATE VIEW GoodStudents(id,name) AS
+SELECT sid,name
+FROM STUDENT
+WHERE gpa=4.0;
+
+SELECT *
+FROM GoodStudents
+WHERE name='mark';
+---------------------------------------------
+SELECT AVG(age)
+FROM STUDENT;
+---------------------------------------------
+SELECT COUNT(*)
+FROM STUDENT;
+---------------------------------------------
+SELECT name
+FROM STUDENT
+WHERE gpa=3.0
+GROUP BY name;
+-----------------------------------------------
+--Need to add more data to make this work
+SELECT name
+FROM STUDENT
+WHERE gpa=3.0
+GROUP BY name
+HAVING COUNT(*) > 2;
+-------------------------------------------------

@@ -1,0 +1,14 @@
+-- Group 04
+-- Damian Franco & Trey Sampson
+
+SELECT  FOOT.*
+FROM    FOOT, BONE
+WHERE   BONE.CASE_NO = 124;
+
+SELECT  *
+FROM    BONE
+WHERE   BONE_ID = 1001;
+
+SELECT  UNIQUE BONE.*
+FROM    BONE, OMI_CASE
+WHERE   PERSON_ANCESTRY = 'White';
